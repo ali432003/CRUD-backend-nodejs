@@ -13,6 +13,10 @@ const userSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    img: {
+        type: String,
+        default: "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg"
+    },
     password: {
         type: String,
         required: true
