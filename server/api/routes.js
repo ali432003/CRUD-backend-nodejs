@@ -1,5 +1,5 @@
 import express from "express";
-import { login, signup, updateUser } from "../controllers/userController.js";
+import { getUser, login, signup, updateUser } from "../controllers/userController.js";
 import { addProd, deleteProd, getProd, updateProd } from "../controllers/productController.js";
 
 const router = express.Router()
@@ -15,6 +15,8 @@ router.post(("/signup"), signup)
 router.post("/login", login);
 
 router.put(('/updateuser/:id'), updateUser)
+
+router.get(('/getuser/:id'), getUser)
 
 
 // Product Apis

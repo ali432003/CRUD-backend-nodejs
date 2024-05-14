@@ -5,6 +5,9 @@ import { BASE_URL } from "../../config";
 import { ToastAlert } from "../../config/toast";
 import { CircularProgress } from "@mui/material";
 
+
+
+
 const index = () => {
   const nav = useNavigate();
   const [load, setLoad] = useState(false);
@@ -17,12 +20,20 @@ const index = () => {
     setLoad(true);
     try {
       const res = await axios.post(`${BASE_URL}/login`, FormData);
-      const uid = res.data.data._id
-      localStorage.setItem("uid: ",uid) 
-      setFormData({ name: "", password: ""});
+      const data = res.data
+      if(data.status){
+        const uid = data.data._id
+        localStorage.setItem("uid",uid) 
+        setFormData({ name: "", password: ""});
+        setLoad(false)
+        ToastAlert(data.message, "success");
+        nav("/");
+        return
+      }
+      ToastAlert(data.message,"error")
       setLoad(false)
-      ToastAlert(res.data.message, "success");
-      nav("/");
+      nav("/login")
+      
     } catch (error) {
       setLoad(false);
       ToastAlert(error.message, "error");
@@ -68,8 +79,6 @@ const index = () => {
                     type="password"
                     required
                     placeholder="••••••••"
-                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                    title="Must contain at least one number, one uppercase and lowercase letter, and at least 8 or more characters"
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   />
                 </div>

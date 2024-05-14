@@ -26,20 +26,14 @@ function App() {
     return location.pathname === "/signup" || location.pathname === "/login";
   };
 
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchData());
-  }, [dispatch]);
-
-  const { products } = useSelector((state) => state.product);
+  
 
   return (
     <>
-      {!isSignupOrLogin() && <Nav product={products} />}
+      {!isSignupOrLogin() && <Nav/>}
       <Routes>
         <Route index element={<Main />} />
-        <Route path="/product" element={<Product />} />
+        <Route path="/product" element={<Product/>} />
         <Route element={<PrivRoute />}>
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />

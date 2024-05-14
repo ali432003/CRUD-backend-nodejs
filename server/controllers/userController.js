@@ -1,5 +1,6 @@
 import User from "../model/userSchema.js";
 import bcrypt, { hash } from "bcrypt"
+import jwt from "jsonwebtoken"
 
 export const signup = async (req, res) => {
     try {
@@ -32,7 +33,8 @@ export const login = async (req, res) => {
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
-                res.json({ status: true, data: user, message: "User logged in successfully" });
+                const token = jwt.sign({ _id: user._id, email: user.email }, "PRIVATEKEY")
+                res.json({ status: true, data: user, message: "User logged in successfully", token });
             } else {
                 res.json({ status: false, data: [], message: "Incorrect password" });
             }
@@ -54,5 +56,19 @@ export const updateUser = async (req, res) => {
         res.status(500).json({ error: error.message })
     }
 }
+
+export const getUser = async (req, res) => {
+    try {
+        const _id = req.params.id
+        const CurrUser = await User.findOne({ _id: _id })
+        if (CurrUser) {
+            return res.json({ message: "user found", data: CurrUser, status: true })
+        }
+        return res.json({ message: "no such user found", data: [], status: false })
+    } catch (error) {
+        return res.json({ message: error.message, data: [], status: false })   
+    }
+}
+
 
 

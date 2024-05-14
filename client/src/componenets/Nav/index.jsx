@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Menu,
   Person,
+  ShoppingCart,
   VerifiedUser,
   WidthFull,
 } from "@mui/icons-material";
@@ -27,10 +28,18 @@ import {
   enableLightMode,
 } from "../../store/slices/DarkModeSlice.js";
 import { useNavigate } from "react-router-dom";
+import { fetchData } from "../../store/slices/productSlice.js";
 
-const Index = ({ product }) => {
+const Index = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchData());
+  }, [dispatch]);
+
+  const { products, loading } = useSelector((state) => state.product);
   const categories = Array.from(
-    new Set(product.data?.map((obj) => obj.category))
+    new Set(products.data?.map((obj) => obj.category))
   );
 
   const nav = useNavigate();
@@ -40,7 +49,6 @@ const Index = ({ product }) => {
   const [showOrdersDropdown, setShowOrdersDropdown] = useState(false);
 
   const { darkmode } = useSelector((state) => state.darkMode);
-  const dispatch = useDispatch();
 
   // Handlers to toggle the dropdowns
   const toggleProductDropdown = () => {
@@ -264,6 +272,20 @@ const Index = ({ product }) => {
               </div>
             )}
           </div>
+          <div className="relative">
+          <div
+            className={`flex justify-center place-items-center ${
+              darkmode ? "bg-slate-900" : "bg-purple-700"
+            } p-2 my-[2rem] rounded-lg cursor-pointer `}
+          >
+            <ShoppingCart sx={{ color: "wheat" }} />
+          </div>
+          <input
+            value={0}
+            disabled
+            className="text-white bg-cyan-700 absolute w-5 top-4 -right-2 rounded-full px-1"
+          />
+        </div>
         </div>
       ) : (
         <div
@@ -464,6 +486,21 @@ const Index = ({ product }) => {
                       </div>
                     </div>
                   )}
+                  <div className="h-[0.2px] bg-slate-400 w-full"></div>
+                  <div className="flex justify-between w-full my-4 relative">
+                    <div
+                      className={`flex justify-center place-items-center ${
+                        darkmode ? "bg-slate-700" : "bg-purple-700"
+                      } p-2 my-[2rem] rounded-lg cursor-pointer `}
+                    >
+                      <ShoppingCart sx={{ color: "wheat" }} />
+                    </div>
+                    <input
+                      value={0}
+                      disabled
+                      className="text-black bg-white absolute w-5 top-4 left-7 rounded-full px-1"
+                    />
+                  </div>
                 </Box>
               </Drawer>
             </div>
