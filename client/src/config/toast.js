@@ -23,7 +23,7 @@ export const ToastAlert = (message, type) => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: "dark",
         transition: Slide,
       });
     case "warning":
@@ -35,7 +35,31 @@ export const ToastAlert = (message, type) => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "colored",
+        theme: "dark",
+        transition: Slide,
+      });
+    case "info":
+      return toast.info(message, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Slide,
+      });
+    case "default":
+      return toast(message, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
         transition: Slide,
       });
   }

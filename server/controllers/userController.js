@@ -1,10 +1,13 @@
 import User from "../model/userSchema.js";
 import bcrypt, { hash } from "bcrypt"
 import jwt from "jsonwebtoken"
+import nodemailer from "nodemailer"
+import { EmailVerificationHtml } from "../templates/index.js"
+import OTPModel from "../model/OTPSchema.js"
 
 export const signup = async (req, res) => {
     try {
-        const { email, name, age, password } = req.body
+        const { email, name, age, password,img } = req.body
         if (!email || !name || !password || !age) {
             res.json({ message: "Fill all Fields", status: false })
             return
@@ -66,9 +69,110 @@ export const getUser = async (req, res) => {
         }
         return res.json({ message: "no such user found", data: [], status: false })
     } catch (error) {
-        return res.json({ message: error.message, data: [], status: false })   
+        return res.json({ message: error.message, data: [], status: false })
     }
 }
+
+// const SendOTP = new Promise(async (resolve, reject) => {
+//     try {
+//         const transporter = nodemailer.createTransport(
+//             {
+//                 service: 'gmail',
+//                 auth: {
+//                     user: process.env.email,
+//                     pass: process.env.pass
+//                 }
+//             }
+//         );
+//         const otp = Math.floor(100000 + Math.random() * 900000);
+//         await transporter.sendMail({
+//             from: process.env.email,
+//             to: email,
+//             subject: "Email Verfication",
+//             html: EmailVerificationHtml(otp),
+//         })
+//         const responseOTP = await OTPModel.create({
+//             otp,
+//             email
+//         })
+//         resolve({ responseOTP })
+
+//     } catch (error) {
+//         reject({
+//             message: error.message,
+//             status: false,
+//             data: [],
+//         })
+//     }
+// })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// export const OTPVerification = async (request, response) => {
+//     try {
+//         const { email, otp } = request.body
+
+//         if (!email || !otp) {
+//             response.json({
+//                 message: "required fields are missing!",
+//                 status: false
+//             })
+//             return
+//         }
+
+//         const otpRes = await OTPModel.findOne({ email, otp })
+//         console.log("otpRes", otpRes)
+//         if (!otpRes) {
+//             response.json({
+//                 message: "Invalid OTP!",
+//                 status: false
+//             })
+//             return
+//         }
+
+//         if (otpRes.isUsed) {
+//             response.json({
+//                 message: "Invalid OTP!",
+//                 status: false
+//             })
+//             return
+//         }
+
+//         const ress = await OTPModel.findOneAndUpdate({ _id: otpRes._id }, {
+//             isUsed: true
+//         })
+//         console.log("ress", ress)
+//         response.json({
+//             message: "OTP Verify!",
+//             status: true,
+//             data: []
+//         })
+//         // console.log()
+
+//     } catch (error) {
+//         response.json({
+//             message: error.message,
+//             status: false,
+//             data: [],
+//         })
+//     }
+// }
+
+
+
 
 
 

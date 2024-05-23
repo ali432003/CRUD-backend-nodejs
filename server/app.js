@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 import dotenv from "dotenv"
 import router from "./api/routes.js"
 import cors from "cors"
+import { cloudinaryConfig } from './config/cloudinaryConfig.js';
 
 const app = express() 
 
@@ -20,6 +21,10 @@ mongoose.connect(DB).then(()=>{
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({ origin: "*" }))
+
+//Cloudinary Config
+cloudinaryConfig()
+
 // my api end points 
 app.use(router)
 

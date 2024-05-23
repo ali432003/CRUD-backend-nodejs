@@ -1,24 +1,13 @@
 import React, { useState, useEffect } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import CartModal from "../../modals/CartModal";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  AccountCircle,
-  ChevronRight,
-  Menu,
-  Person,
-  ShoppingCart,
-  VerifiedUser,
-  WidthFull,
-} from "@mui/icons-material";
+import { ChevronRight, Menu, ShoppingCart } from "@mui/icons-material";
 import { Box } from "@mui/material";
-import IconButton from "@mui/joy/IconButton";
 import Drawer from "@mui/joy/Drawer";
-import Input from "@mui/joy/Input";
-import List from "@mui/joy/List";
-import ListItemButton from "@mui/joy/ListItemButton";
 import Typography from "@mui/joy/Typography";
 import ModalClose from "@mui/joy/ModalClose";
 import { Divider } from "@mui/material";
@@ -29,37 +18,31 @@ import {
 } from "../../store/slices/DarkModeSlice.js";
 import { useNavigate } from "react-router-dom";
 import { fetchData } from "../../store/slices/productSlice.js";
+import { ToastAlert } from "../../config/toast.js";
 
 const Index = () => {
   const dispatch = useDispatch();
+  const [openButton, setOpenButton] = useState(false);
 
   useEffect(() => {
     dispatch(fetchData());
   }, [dispatch]);
 
   const { products, loading } = useSelector((state) => state.product);
+  const { count } = useSelector((state) => state.cartCount);
+
   const categories = Array.from(
     new Set(products.data?.map((obj) => obj.category))
   );
 
   const nav = useNavigate();
 
-  // State to manage dropdown visibility
-  const [showProductDropdown, setShowProductDropdown] = useState(false);
-  const [showOrdersDropdown, setShowOrdersDropdown] = useState(false);
+
 
   const { darkmode } = useSelector((state) => state.darkMode);
 
-  // Handlers to toggle the dropdowns
-  const toggleProductDropdown = () => {
-    setShowProductDropdown((prev) => !prev);
-    setShowOrdersDropdown(false);
-  };
+  
 
-  const toggleOrdersDropdown = () => {
-    setShowOrdersDropdown((prev) => !prev);
-    setShowProductDropdown(false);
-  };
   const [show, setShow] = useState(window.innerWidth > 1152 ? true : false);
   const [open, setOpen] = React.useState(false);
   useEffect(() => {
@@ -74,7 +57,6 @@ const Index = () => {
     };
   }, []);
   const [drop, setDrop] = useState(false);
-  const [order, setDropOrder] = useState(false);
 
   const handleSignout = () => {
     localStorage.clear();
@@ -84,10 +66,12 @@ const Index = () => {
 
   return (
     <div
-      className={`border ${darkmode ? "bg-[#0b0d11]" : "bg-white"} shadow-md`}
+      className={`border ${
+        darkmode ? "bg-[#0b0d11]" : "bg-white"
+      } shadow-md sticky top-0 z-10`}
     >
       {show ? (
-        <div className="lg:w-[70rem] lg:mx-auto flex justify-between">
+        <div className="lg:w-[70rem] lg:mx-auto flex justify-evenly">
           <div className="flex py-[1rem] gap-x-[3rem] ">
             <div
               className="flex gap-x-5 cursor-pointer"
@@ -116,103 +100,10 @@ const Index = () => {
                 } p-2 rounded-lg cursor-pointer ${
                   darkmode ? "text-slate-50" : "text-slate-700"
                 }`}
-                onMouseEnter={toggleProductDropdown}
                 onClick={() => nav("/product")}
               >
-                Product
-                {showProductDropdown ? (
-                  <KeyboardArrowUpIcon fontSize="medium" />
-                ) : (
-                  <KeyboardArrowDownIcon fontSize="medium" />
-                )}
-                {showProductDropdown && (
-                  <div
-                    className={`absolute grid grid-cols-2 p-[1rem]  ${
-                      darkmode ? "bg-slate-500" : "bg-slate-200"
-                    } shadow-md mt-3 rounded-lg z-10`}
-                  >
-                    <ul className="border pe-3  border-slate-500 border-t-0 border-l-0 border-b-0">
-                      {categories.slice(0, 6).map((cat, index) => {
-                        return (
-                          <li
-                            key={index}
-                            className={`p-2 ${
-                              darkmode
-                                ? "hover:bg-slate-700"
-                                : "hover:bg-slate-300"
-                            } rounded-lg`}
-                          >
-                            {cat}
-                          </li>
-                        );
-                      })}
-                    </ul>
-
-                    <ul className="ps-2">
-                      {categories.slice(6, 11).map((cat, index) => {
-                        return (
-                          <li
-                            key={index}
-                            className={`p-2 ${
-                              darkmode
-                                ? "hover:bg-slate-700"
-                                : "hover:bg-slate-300"
-                            } rounded-lg`}
-                          >
-                            {cat}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )}
+                Products
               </li>
-              {localStorage.getItem("uid") && (
-                <li
-                  className={`${
-                    darkmode ? "hover:bg-slate-500" : "hover:bg-slate-200"
-                  } p-2 rounded-lg cursor-pointer ${
-                    darkmode ? "text-slate-50" : "text-slate-700"
-                  }`}
-                  onMouseEnter={toggleOrdersDropdown}
-                  onClick={() => nav("/orders")}
-                >
-                  Orders{" "}
-                  {showOrdersDropdown ? (
-                    <KeyboardArrowUpIcon fontSize="medium" />
-                  ) : (
-                    <KeyboardArrowDownIcon fontSize="medium" />
-                  )}
-                  {showOrdersDropdown && (
-                    <div
-                      className={`absolute grid grid-cols-1 p-[1rem]  ${
-                        darkmode ? "bg-slate-500" : "bg-slate-200"
-                      } shadow-md mt-3 rounded-lg z-10`}
-                    >
-                      <ul>
-                        <li
-                          className={`p-2 ${
-                            darkmode
-                              ? "hover:bg-slate-700"
-                              : "hover:bg-slate-300"
-                          } rounded-lg`}
-                        >
-                          Order 1
-                        </li>
-                        <li
-                          className={`p-2 ${
-                            darkmode
-                              ? "hover:bg-slate-700"
-                              : "hover:bg-slate-300"
-                          } rounded-lg`}
-                        >
-                          Order 2
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-                </li>
-              )}
               {localStorage.getItem("uid") && (
                 <li
                   className={`${
@@ -272,20 +163,31 @@ const Index = () => {
               </div>
             )}
           </div>
-          <div className="relative">
-          <div
-            className={`flex justify-center place-items-center ${
-              darkmode ? "bg-slate-900" : "bg-purple-700"
-            } p-2 my-[2rem] rounded-lg cursor-pointer `}
-          >
-            <ShoppingCart sx={{ color: "wheat" }} />
-          </div>
-          <input
-            value={0}
-            disabled
-            className="text-white bg-cyan-700 absolute w-5 top-4 -right-2 rounded-full px-1"
-          />
-        </div>
+          {localStorage.getItem("uid") && (
+            <div className="relative">
+              <div
+                className={`flex justify-center place-items-center ${
+                  darkmode ? "bg-slate-900" : "bg-purple-700"
+                } p-2 my-[2rem] rounded-lg cursor-pointer `}
+                onClick={() =>
+                  !localStorage.getItem("uid")
+                    ? ToastAlert("Login first", "info")
+                    : setOpenButton(true)
+                }
+              >
+                <ShoppingCart sx={{ color: "wheat" }} />
+              </div>
+              <CartModal
+                openButton={openButton}
+                setOpenButton={setOpenButton}
+              />
+              <input
+                value={count}
+                disabled
+                className="text-white bg-cyan-700 absolute w-6 text-center top-4 -right-2 rounded-full px-1"
+              />
+            </div>
+          )}
         </div>
       ) : (
         <div
@@ -415,38 +317,6 @@ const Index = () => {
                     </ul>
                   </div>
                   <div className="h-[0.2px] bg-slate-400 w-full"></div>
-                  {localStorage.getItem("uid") && (
-                    <div className="flex justify-between w-full my-4">
-                      <div
-                        className="flex gap-2 pt-2 text-3xl font-bold"
-                        onClick={() => {
-                          nav("/orders");
-                          setOpen(false);
-                        }}
-                      >
-                        <p>Orders</p>
-                      </div>
-                      <div onClick={() => setDropOrder(!order)}>
-                        {order ? (
-                          <KeyboardArrowDownIcon />
-                        ) : (
-                          <ChevronRight fontSize="small" />
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  <div
-                    className={`w-full shadow-inner ${order ? "" : "hidden"}`}
-                  >
-                    <Divider />
-                    <ul
-                      className={`p-3 gap-y-3 flex flex-col text-slate-300 font-extrabold text-2xl`}
-                    >
-                      <li>Order 1</li>
-                      <li>Order 2</li>
-                      <li>Order 3</li>
-                    </ul>
-                  </div>
 
                   <div className="h-[0.2px] bg-slate-400 w-full"></div>
                   {localStorage.getItem("uid") && (
@@ -487,20 +357,35 @@ const Index = () => {
                     </div>
                   )}
                   <div className="h-[0.2px] bg-slate-400 w-full"></div>
-                  <div className="flex justify-between w-full my-4 relative">
+                  {localStorage.getItem("uid") && (
                     <div
-                      className={`flex justify-center place-items-center ${
-                        darkmode ? "bg-slate-700" : "bg-purple-700"
-                      } p-2 my-[2rem] rounded-lg cursor-pointer `}
+                      className="flex justify-between w-full my-4 relative"
+                      onClick={() => setOpen(false)}
                     >
-                      <ShoppingCart sx={{ color: "wheat" }} />
+                      <div
+                        className={`flex justify-center place-items-center ${
+                          darkmode ? "bg-slate-700" : "bg-purple-700"
+                        } p-2 my-[2rem] rounded-lg cursor-pointer `}
+                        onClick={() =>
+                          !localStorage.getItem("uid")
+                            ? ToastAlert("Login first", "warning")
+                            : setOpenButton(true)
+                        }
+                      >
+                        <ShoppingCart sx={{ color: "wheat" }} />
+                      </div>
+
+                      <CartModal
+                        openButton={openButton}
+                        setOpenButton={setOpenButton}
+                      />
+                      <input
+                        value={count}
+                        disabled
+                        className="text-black bg-white absolute w-5 top-4 left-7 rounded-full px-1"
+                      />
                     </div>
-                    <input
-                      value={0}
-                      disabled
-                      className="text-black bg-white absolute w-5 top-4 left-7 rounded-full px-1"
-                    />
-                  </div>
+                  )}
                 </Box>
               </Drawer>
             </div>

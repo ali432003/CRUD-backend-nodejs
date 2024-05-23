@@ -13,6 +13,7 @@ const Index = () => {
   const { CurrUser, loading } = useSelector((state) => state.user);
   const [isDis, setIsDis] = useState(true);
   const [load, setLoad] = useState(false);
+  const [imgload, setImgLoad] = useState(false);
   const [updValue, setUpdValue] = useState({ name: "", age: 0, img: "" });
   const [imageSrc, setImageSrc] = useState(""); // State variable for image source
 
@@ -20,9 +21,7 @@ const Index = () => {
     setUpdValue({
       name: CurrUser.data?.name,
       age: CurrUser.data?.age,
-      img: CurrUser.data?.img,
     });
-    setImageSrc(CurrUser.data?.img); // Initialize image source
   }, [CurrUser]);
 
   const editStart = () => {
@@ -43,7 +42,7 @@ const Index = () => {
       if (res.data.status) {
         setUpdValue(res.data.data);
         setImageSrc(res.data.data.img); // Update image source with new URL
-        ToastAlert(res.data.message, "success");
+        ToastAlert(res.data.message, "default");
         setIsDis(true);
       } else {
         ToastAlert(res.data.message, "error");
@@ -55,25 +54,42 @@ const Index = () => {
     setLoad(false);
   };
 
-  const getBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   const handleFileChange = async (e) => {
+    setImgLoad(true);
+    e.preventDefault();
+    let file = e.target.files[0]; // Corrected from e.target.file[0] to e.target.files[0]
+
+    if (!file) {
+      ToastAlert("Please select a file", "error");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("userImg", file); // 'userImg' should match the field name in your multer setup
+
     try {
-      const file = e.target.files[0];
-      if (file) {
-        const base64 = await getBase64(file);
-        handleChange("img", base64);
-        setImageSrc(base64); // Update image source with base64 data
+      const resp = await axios.post(`${BASE_URL}/imageupload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (resp.data.status) {
+        const userImg = resp.data.data.url;
+        const imgRes = await axios.put(
+          `${BASE_URL}/updateuser/${CurrUser.data._id}`,
+          { img: userImg }
+        );
+        ToastAlert("Image uploaded successfully", "info");
+        setImageSrc(imgRes.data.data.img);
+        setImgLoad(false);
+      } else {
+        ToastAlert("Error in uploading", "error");
+        setImgLoad(false);
       }
     } catch (error) {
-      console.error("Error converting file:", error);
+      ToastAlert(error.message, "error");
+      setImgLoad(false);
     }
   };
 
@@ -82,12 +98,14 @@ const Index = () => {
   }, [dispatch]);
 
   return (
-    <div style={{
-      background: darkmode
-        ? "linear-gradient(90deg, #0f172a, #334155)"
-        : "linear-gradient(90deg, #94a3b8, #f1f5f9)",
-        color:darkmode?"white":"",
-    }}>
+    <div
+      style={{
+        background: darkmode
+          ? "linear-gradient(90deg, #0f172a, #334155)"
+          : "linear-gradient(90deg, #94a3b8, #f1f5f9)",
+        color: darkmode ? "white" : "",
+      }}
+    >
       <div className="lg:w-[70rem] lg:mx-auto py-[2rem] flex flex-col min-h-screen justify-center">
         <h1
           className="lg:text-7xl text-5xl font-bold ms-[3rem] lg:ms-0"
@@ -102,17 +120,21 @@ const Index = () => {
           Profile.
         </h1>
         <div className="border mx-[1rem] relative lg:mx-0 border-slate-700 flex lg:flex-row md:flex-row flex-col  p-[2rem] mt-[2rem] rounded-xl md:gap-x-[1rem] lg:gap-x-[2rem]">
-          <div  className="relative">
-            {!loading ? (
+          <div className="relative">
+            {!imgload ? (
               <img
-                src={imageSrc}
-                className={`rounded-full border mb-5 lg:mb-0 ${darkmode?'border-purple-800':'border-slate-800'} border-[0.4rem]`}
+                src={imageSrc ? imageSrc : CurrUser.data?.img}
+                className={`rounded-full border mb-5 lg:mb-0 ${
+                  darkmode ? "border-purple-800" : "border-slate-800"
+                } border-[0.4rem]`}
                 height={250}
                 width={250}
                 alt="Profile"
               />
             ) : (
-              <div className={`rounded-full border mb-5 lg:mb-0 border-slate-800 border-[0.4rem] h-[250px] w-[250px] place-items-center flex justify-center`}>
+              <div
+                className={`rounded-full border mb-5 lg:mb-0 border-slate-800 border-[0.4rem] h-[250px] w-[250px] place-items-center flex justify-center`}
+              >
                 <CircularProgress />
               </div>
             )}
@@ -130,15 +152,26 @@ const Index = () => {
                 className="absolute bottom-0 right-0 mb-[5rem] mr-[2.9rem] lg:mr-[0rem]"
               >
                 <Edit
-                  className={`${darkmode?'bg-purple-800':'bg-slate-800'} rounded-full cursor-pointer`}
-                  onClick={()=>!isDis?"":ToastAlert("Click Edit to unlock This button","warning")}
+                  className={`${
+                    darkmode ? "bg-purple-800" : "bg-slate-800"
+                  } rounded-full cursor-pointer`}
+                  onClick={() =>
+                    !isDis
+                      ? ""
+                      : ToastAlert(
+                          "Click Edit to unlock This button",
+                          "info"
+                        )
+                  }
                   sx={{ color: "wheat", padding: "0.3rem" }}
                 />
               </label>
             </div>
           </div>
           {!loading ? (
-            <div className={`lg:grid lg:grid-cols-3 flex flex-col md:flex-row flex-wrap overflow-hidden gap-4 lg:ms-5`}>
+            <div
+              className={`lg:grid lg:grid-cols-3 flex flex-col md:flex-row flex-wrap overflow-hidden gap-4 lg:ms-5`}
+            >
               <h1 className="col-span-3 flex lg:flex-row flex-col gap-y-5 lg:gap-y-0 justify-between">
                 ID : {CurrUser.data?._id}{" "}
                 <div>
@@ -149,7 +182,19 @@ const Index = () => {
                 </div>
               </h1>
               <h1 className="lg:flex lg:flex-col">
-              <label className="flex gap-x-1">Name {<span className={darkmode?`text-slate-300`:`text-purple-800`}>(editable) </span>}:</label>
+                <label className="flex gap-x-1">
+                  Name{" "}
+                  {
+                    <span
+                      className={
+                        darkmode ? `text-slate-300` : `text-purple-800`
+                      }
+                    >
+                      (editable){" "}
+                    </span>
+                  }
+                  :
+                </label>
                 <input
                   className="bg-slate-200 p-1 border border-slate-400 rounded-lg focus:outline-none focus:ring focus:ring-slate-300 text-black"
                   type="text"
@@ -168,7 +213,19 @@ const Index = () => {
                 />
               </h1>
               <h1 className="lg:flex lg:flex-col">
-                <label className="flex gap-x-1">Age {<span className={darkmode?`text-slate-300`:`text-purple-800`}>(editable) </span>}:</label>
+                <label className="flex gap-x-1">
+                  Age{" "}
+                  {
+                    <span
+                      className={
+                        darkmode ? `text-slate-300` : `text-purple-800`
+                      }
+                    >
+                      (editable){" "}
+                    </span>
+                  }
+                  :
+                </label>
                 <input
                   className="bg-slate-200 p-1 border border-slate-400 rounded-lg focus:outline-none focus:ring focus:ring-slate-300 text-black"
                   type="number"

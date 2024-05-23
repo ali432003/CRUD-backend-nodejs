@@ -1,12 +1,10 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 import { ToastAlert } from "../../config/toast";
-import { CircularProgress } from "@mui/material";
-
-
-
+import { Button, CircularProgress } from "@mui/material";
+import AdminModal from "../../modals/AdminModal";
 
 const index = () => {
   const nav = useNavigate();
@@ -20,29 +18,39 @@ const index = () => {
     setLoad(true);
     try {
       const res = await axios.post(`${BASE_URL}/login`, FormData);
-      const data = res.data
-      if(data.status){
-        const uid = data.data._id
-        localStorage.setItem("uid",uid) 
-        setFormData({ name: "", password: ""});
-        setLoad(false)
+      const data = res.data;
+      if (data.status) {
+        const uid = data.data._id;
+        localStorage.setItem("uid", uid);
+        setFormData({ name: "", password: "" });
+        setLoad(false);
         ToastAlert(data.message, "success");
         nav("/");
-        return
+        return;
       }
-      ToastAlert(data.message,"error")
-      setLoad(false)
-      nav("/login")
-      
+      ToastAlert(data.message, "error");
+      setLoad(false);
+      nav("/login");
     } catch (error) {
       setLoad(false);
       ToastAlert(error.message, "error");
     }
   };
-  
+  const [open, setOpen] = useState(false);
   return (
     <>
       <section className="bg-gray-50 dark:bg-gray-900">
+        <div className="flex justify-end p-[1rem] ">
+          <button
+            className="bg-blue-400 text-white p-1 rounded-lg"
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            Admin
+          </button>
+          <AdminModal open={open} settings={setOpen} />
+        </div>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:min-h-screen lg:py-0 mt-5">
           <a className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
             <img className="w-8 h-8 mr-2" src="/img/logo.svg" alt="logo" />D E N
@@ -87,7 +95,11 @@ const index = () => {
                   type="submit"
                   className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                 >
-                  {load ? <CircularProgress size={20} sx={{color:"wheat"}}/> :"Login"}
+                  {load ? (
+                    <CircularProgress size={20} sx={{ color: "wheat" }} />
+                  ) : (
+                    "Login"
+                  )}
                 </button>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Dont't have an account?{" "}

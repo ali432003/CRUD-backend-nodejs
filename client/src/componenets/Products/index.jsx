@@ -4,6 +4,7 @@ import { ShoppingCart } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchData } from "../../store/slices/productSlice";
+import Pagination from "@mui/material/Pagination";
 
 const index = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,22 @@ const index = () => {
     backgroundClip: "text",
     WebkitTextFillColor: "transparent",
     color: "transparent",
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10
+
+  
+
+  const totalPages = Math.ceil(products.data?.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, products.data?.length);
+  const realData = products.data?.slice(startIndex, endIndex);
+
+  const handleChangePage = (event, page) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setCurrentPage(page);
   };
 
   return (
@@ -40,7 +57,7 @@ const index = () => {
 
         {!loading ? (
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-[2rem] lg:gap-4 mt-[2rem]">
-            {products.data?.map((obj, index) => {
+            {realData?.map((obj, index) => {
               return (
                 <Cards
                   key={index}
@@ -59,6 +76,14 @@ const index = () => {
           </div>
         )}
       </div>
+      <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handleChangePage}
+          sx={{ display: "flex", justifyContent: "center", paddingY: "2rem",color:"white" }}
+          shape="rounded"
+          color={darkmode?'secondary':'primary'}
+        />
     </div>
   );
 };
