@@ -59,7 +59,7 @@ export default function AdminModal({open,settings}) {
               </FormControl>
               <FormControl>
                 <FormLabel>Password</FormLabel>
-                <Input autoFocus required type='password' onChange={(e)=>setData({...data,password:e.target.value})}/>
+                <Input required type='password' onChange={(e)=>setData({...data,password:e.target.value})}/>
               </FormControl>
               <Button type="submit">Submit</Button>
             </Stack>

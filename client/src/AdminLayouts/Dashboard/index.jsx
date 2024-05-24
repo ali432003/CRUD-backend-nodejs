@@ -11,16 +11,17 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { LineChart } from "@mui/x-charts/LineChart";
-import { FireTruck, ShoppingCart } from "@mui/icons-material";
+import {  ShoppingCart } from "@mui/icons-material";
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import ProdList from "../ProdList";
 import OrderList from "../OrderList";
 import { useNavigate } from "react-router-dom";
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 const drawerWidth = 240;
 
 export default function index() {
-    const nav = useNavigate()
+  const nav = useNavigate();
   const [showCharts, setshowCharts] = React.useState(true);
   const [showProd, setshowProd] = React.useState(false);
   const [showorders, setshoworders] = React.useState(false);
@@ -41,10 +42,10 @@ export default function index() {
     setshoworders(true);
   };
 
-  const handleSignout = ()=>{
-    localStorage.removeItem("admin")
-    nav("/login")
-  }
+  const handleSignout = () => {
+    localStorage.removeItem("admin");
+    nav("/login");
+  };
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -72,26 +73,26 @@ export default function index() {
         <List>
           <ListItem disablePadding onClick={handleProducts}>
             <ListItemButton>
-              <ListItemText primary={"Products"} />
               <ListItemIcon>
                 <ShoppingCart />
               </ListItemIcon>
+              <ListItemText primary={"Products"} />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding onClick={handleOrders}>
             <ListItemButton>
-              <ListItemText primary={"Orders"} />
               <ListItemIcon>
-                <FireTruck />
+                <LocalShippingIcon />
               </ListItemIcon>
+              <ListItemText primary={"Orders"} />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding onClick={handleSignout}>
             <ListItemButton>
-              <ListItemText primary={"Signout"} />
               <ListItemIcon>
-                <ExitToAppIcon/>
+                <ExitToAppIcon />
               </ListItemIcon>
+              <ListItemText primary={"Signout"} />
             </ListItemButton>
           </ListItem>
         </List>
@@ -101,69 +102,75 @@ export default function index() {
         component="main"
         sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
       >
-        <h1 className="text-4xl font-bold">Welcome To Admin Dasboard</h1>
         {showCharts && (
-          <Box className="grid grid-cols-2">
-            <Box>
-              <LineChart
-                xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-                series={[
-                  {
-                    data: [2, 5.5, 2, 8.5, 1.5, 5],
-                  },
-                ]}
-                width={500}
-                height={300}
-              />
-            </Box>
-            <Box>
-              <LineChart
-                xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-                series={[
-                  {
-                    data: [2, 5.5, 2, 8.5, 1.5, 5],
-                    area: true,
-                  },
-                ]}
-                width={500}
-                height={300}
-              />
-            </Box>
-            <Box>
-              <BarChart
-                xAxis={[
-                  { scaleType: "band", data: ["Products", "Orders", "Users"] },
-                ]}
-                series={[
-                  { data: [4, 3, 5] },
-                  { data: [1, 6, 3] },
-                  { data: [2, 5, 6] },
-                ]}
-                width={500}
-                height={300}
-              />{" "}
-            </Box>
+          <>
+            <h1 className="text-4xl font-bold">Welcome To Admin Dasboard</h1>
+            <Box className="grid grid-cols-2">
+              <Box>
+                <LineChart
+                  xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+                  series={[
+                    {
+                      data: [2, 5.5, 2, 8.5, 1.5, 5],
+                    },
+                  ]}
+                  width={500}
+                  height={300}
+                />
+              </Box>
+              <Box>
+                <LineChart
+                  xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+                  series={[
+                    {
+                      data: [2, 5.5, 2, 8.5, 1.5, 5],
+                      area: true,
+                    },
+                  ]}
+                  width={500}
+                  height={300}
+                />
+              </Box>
+              <Box>
+                <BarChart
+                  xAxis={[
+                    {
+                      scaleType: "band",
+                      data: ["Products", "Orders", "Users"],
+                    },
+                  ]}
+                  series={[
+                    { data: [4, 3, 5] },
+                    { data: [1, 6, 3] },
+                    { data: [2, 5, 6] },
+                  ]}
+                  width={500}
+                  height={300}
+                />{" "}
+              </Box>
 
-            <Box>
-              <LineChart
-                xAxis={[{ data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }]}
-                series={[
-                  {
-                    data: [2, 3, 5.5, 8.5, 1.5, 5, 1, 4, 3, 8],
-                    showMark: ({ index }) => index % 2 === 0,
-                  },
-                ]}
-                width={500}
-                height={300}
-              />
+              <Box>
+                <LineChart
+                  xAxis={[{ data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }]}
+                  series={[
+                    {
+                      data: [2, 3, 5.5, 8.5, 1.5, 5, 1, 4, 3, 8],
+                      showMark: ({ index }) => index % 2 === 0,
+                    },
+                  ]}
+                  width={500}
+                  height={300}
+                />
+              </Box>
             </Box>
-          </Box>
+          </>
         )}
 
         {/* Products */}
 
         {showProd && (
           <Box>
+            <h1 className="text-4xl font-bold">Total Products Listing</h1>
             <ProdList />
           </Box>
         )}
@@ -171,6 +178,7 @@ export default function index() {
         {/* Orders */}
         {showorders && (
           <Box>
+            <h1 className="text-4xl font-bold">Track Orders History</h1>
             <OrderList />
           </Box>
         )}
